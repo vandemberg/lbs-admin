@@ -1,0 +1,25 @@
+.adminLayout {
+  overflow: hidden;
+  margin: 1rem;  
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: 2rem;
+}
+
+.adminLayout > * {
+  border-radius: 1rem;
+  padding: 2rem;
+  margin: 1rem;
+}
+
+.adminAside {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.mainContent {
+  background: var(--gray-800);
+  display: flex;
+  flex-direction: column;
+}

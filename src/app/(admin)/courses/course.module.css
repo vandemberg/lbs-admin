@@ -1,0 +1,70 @@
+:root {
+  --primary-color: #007bff;
+  --green-color: var(--green-500);
+  --white-color: var(--white);
+  --border-radius: 0.25rem;
+  --padding: 0.5rem;
+  --gap: 2rem;
+}
+
+.filter {
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 1rem;
+  gap: var(--gap);
+}
+
+.filter input {
+  width: 100%;
+  padding: var(--padding);
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius);
+  transition: border-color 0.3s;
+}
+
+.filter input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.filter button {
+  width: 20%;
+  padding: var(--padding);
+  border: 0;
+  border-radius: var(--border-radius);
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.filter button:hover {
+  background-color: darken(var(--primary-color), 10%);
+}
+
+.actions {
+  margin-bottom: 2rem;
+}
+
+.actions a {
+  display: inline-block;
+  text-align: center;
+  width: 12rem;
+  padding: var(--padding);
+  border: 0;
+  border-radius: var(--border-radius);
+  background-color: var(--green-color);
+  color: var(--white-color);
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.actions a:hover {
+  background-color: darken(var(--green-color), 10%);
+}
+
+.courseList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+}

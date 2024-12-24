@@ -1,0 +1,74 @@
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  
+  background-color: var(--gray-800);
+  border-radius: 8px;
+  
+  justify-content: space-evenly;
+  align-items: center;
+  
+  padding-bottom: 1rem;
+}
+
+.profile img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin: 1rem;
+  
+  border: 2px solid var(--green-300);
+  outline: 1px solid var(--white);
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile strong {
+  font-size: 1.2rem;
+  color: var(--gray-500);
+}
+
+.profile .profileActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.profile .profileActions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  color: var(--white);
+  font-size: 1rem;
+  cursor: pointer;
+  
+  transition: background 0.2s;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.profile .profileActions button:first-child {
+  background-color: var(--green-300);
+}
+
+.profile button:first-child:hover {
+  background-color: var(--green-500);
+}
+
+.profile .profileActions button:last-child {
+  background-color: var(--red-500);
+}
+
+.profile button:last-child:hover {
+  filter: brightness(0.8);
+}
