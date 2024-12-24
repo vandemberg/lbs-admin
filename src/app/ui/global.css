@@ -19,6 +19,13 @@ body {
   
   --red-500: #F75A6B;
   --red-300: #FFB8C6;
+  
+  --primary-color: #007bff;
+  --green-color: var(--green-500);
+  --white-color: var(--white);
+  --border-radius: 0.25rem;
+  --padding: 0.5rem;
+  --gap: 2rem;
 }
 
 :focus {
