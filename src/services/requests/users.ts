@@ -7,8 +7,18 @@ export async function getUsers(search: string): Promise<User[]> {
   return response.data;
 }
 
+export async function getUserById(userId: number): Promise<User> {
+  const response = await adminApi.get(`/users/${userId}`);
+  return response.data;
+}
+
 export const createUser = async (user: User) => {
   const response = await adminApi.post("/users", user);
+  return response.data;
+};
+
+export const updateUser = async (userId: number, user: User) => {
+  const response = await adminApi.put(`/users/${userId}`, user);
   return response.data;
 };
 

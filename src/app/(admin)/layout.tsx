@@ -17,10 +17,9 @@ export default function LayoutAdmin({
   useEffect(() => {
     adminApi.interceptors.response.use(null, (error: AxiosError) => {
       if (error?.response?.status !== 401) return;
-      
-      console.log("Token inválido");
-      // localStorage.removeItem('jwt');
-      // window.location.href = '/login'
+
+      localStorage.removeItem('jwt');
+      window.location.href = '/login'
     });
   }, []);
   

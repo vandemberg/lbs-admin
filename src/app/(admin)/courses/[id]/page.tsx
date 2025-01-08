@@ -20,7 +20,7 @@ export default function EditCourse() {
     fetchCourse();
   }, []);
   
-  const handleSubmit = async (courseData: Course) => {
+  const handleSubmit = async (courseData: FormData) => {
     try {
       const  courseUpdated = await courseRequests.updateById(course.id, courseData);
       setCourse(courseUpdated as Course);
