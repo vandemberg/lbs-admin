@@ -6,12 +6,22 @@ const defaultUrl = "https://images.unsplash.com/photo-1664574654700-75f1c1fad74e
 
 interface CourseCardProps {
   course: Course;
+  redirectToEdit: (courseId: number) => void;
+  redirectToModules: (courseId: number) => void;
 }
 
-export default function CourseCard({ course }: CourseCardProps) {
+function selectUrl(url: string) {
+  if(url.includes('thumbnails')) {
+    return url;
+  }
+  
+  return defaultUrl;
+}
+
+export default function CourseCard({ course, redirectToEdit, redirectToModules }: CourseCardProps) {
   return (
     <div className={styles.courseCard}>
-      <Image src={defaultUrl} alt={course.title} width={200} height={200} />
+      <Image src={selectUrl(course.thumbnail)} alt={course.title} width={200} height={200} />
 
       <div className={styles.courseInfo}>
         <p>{course.title}</p>
@@ -27,7 +37,8 @@ export default function CourseCard({ course }: CourseCardProps) {
       </div>
 
       <div className={styles.courseActions}>
-        <button>Editar</button>
+        <button onClick={() => redirectToEdit(course.id)}>Editar</button>
+        <button onClick={() => redirectToModules(course.id)} className={styles.videos}>Módulos e Vídeos</button>
         <button className={styles.delete}> Desabilitar</button>
       </div>
     </div>

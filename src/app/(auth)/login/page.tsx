@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from "react";
-import { redirect } from 'next/navigation'
 import styles from "./login.module.css";
 import { login as loginRequest } from "@/services/requests/login";
 
@@ -16,16 +15,17 @@ const LoginPage: React.FC = () => {
 
     try {
       const response = await loginRequest(email, password)
-
-      if (response.ok) {
-        const data = await response.json();
-        const jwt = data.token;
-
+      const data = await response.data;
+      
+      if (response.status === 200) {
+        const jwt = data.access_token || data.token;
         localStorage.setItem("jwt", jwt);
-        redirect('/dashboard')
-      } else {
-        setError("Email ou senha incorretos.");
+        
+        window.location.href = "/dashboard";
+        return;
       }
+      
+      setError("Email ou senha incorretos.");
     } catch (error) {
       console.log(error);
       setError("Ocorreu um erro. Tente novamente.");

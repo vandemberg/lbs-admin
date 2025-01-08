@@ -12,7 +12,15 @@ const user = {
   avatarUrl: 'https://github.com/vandemberg.png',
 } as User;
 
-export default function ProfileCard() {
+interface ProfileCardProps {
+  handleLogout: () => void;
+}
+
+export default function ProfileCard({ handleLogout }: ProfileCardProps) {
+  function handleOnClick() {
+    handleLogout();
+  }
+  
   return (
     <div className={styles.profile}>
       <Image src={user.avatarUrl} alt={user.name} width={100} height={100} />
@@ -24,7 +32,7 @@ export default function ProfileCard() {
           <button>
             <Pencil /> Editar
           </button>
-          <button>
+          <button onClick={handleOnClick}>
             <SignOut /> Sair
           </button>
         </div>

@@ -8,4 +8,15 @@ const adminApi = axios.create({
   }
 });
 
+adminApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem("jwt");
+
+  if (token) {
+    console.log("request: ", token);
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
 export default adminApi;

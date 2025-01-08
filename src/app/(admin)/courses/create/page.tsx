@@ -1,31 +1,29 @@
+'use client'
+
+import styles from './courseCreate.module.css';
+import Link from "next/link";
+import CourseForm from '@/components/CourseForm';
+import * as courseRequests from "@/services/requests/courses";
+import Course from '@/models/Course';
+import { useState } from 'react';
+
 export default function CreateCourse() {
+  const [course] = useState({} as Course);
+  
+  const handleSubmit = async (courseData: Course) => {
+    try {
+      await courseRequests.createCourse(courseData);
+      alert("Curso criado com sucesso!");
+    } catch {
+      alert("Erro ao criar curso!");
+    } 
+  }
+  
   return (
-    <div>
-      <h1>Create Course</h1>
-      <form>
-        <div>
-          <label htmlFor="courseName">Course Name:</label>
-          <input type="text" id="courseName" name="courseName" required />
-        </div>
-        <div>
-          <label htmlFor="courseDescription">Course Description:</label>
-          <textarea
-            id="courseDescription"
-            name="courseDescription"
-            required
-          ></textarea>
-        </div>
-        <div>
-          <label htmlFor="timeInSeconds">Course Duration (seconds):</label>
-          <input
-            type="number"
-            id="timeInSeconds"
-            name="timeInSeconds"
-            required
-          />
-        </div>
-        <button type="submit">Create Course</button>
-      </form>
+    <div className={styles.container}>
+      <Link href="/courses" className={styles.linkBack}>Voltar</Link>
+      <h1 className={styles.title}>Criar novo curso</h1>
+      <CourseForm course={course} handleSubmit={handleSubmit}  />
     </div>
   );
 }

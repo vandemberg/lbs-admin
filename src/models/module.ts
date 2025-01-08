@@ -1,9 +1,7 @@
-import Video from "./video";
+import Video from "./Video";
 
 export default interface Module {
   id: number;
-  title: string;
-  description: string;
+  name: string;
   videos?: Video[];
-  course_id: number;
 }

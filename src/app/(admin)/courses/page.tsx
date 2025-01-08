@@ -2,38 +2,42 @@
 
 import styles from "./course.module.css";
 import CourseCard from "@/app/ui/CourseCard/CourseCard";
-import adminApi from "@/utils/http/admin-api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
-interface Course {
-  id: number;
-  title: string;
-  description: string;
-}
+import * as courseRequests from "@/services/requests/courses";
+import Course from "@/models/Course";
 
 export default function Courses() {
   const [courses, setCourses] = useState([] as Course[]);
-
+  const [search, setSearch] = useState('');
+  
   useEffect(() => {
     async function fetchCourses() {
-      const response = await adminApi.get("courses");
-      const data = response.data;
-      setCourses(data);
+      const courses = await courseRequests.getCourses(search);
+      setCourses(courses || []);
     }
-
+    
     fetchCourses();
-  }, []);
-
+  }, [search]);
+  
+  function handleSearchInput(event: React.ChangeEvent<HTMLInputElement>) {
+    setSearch(event.target.value);
+  }
+  
+  function redirectToEdit(courseId: number) {
+    window.location.href = `/courses/${courseId}`;
+  }
+  
+  function redirectToModules(courseId: number) {
+    window.location.href = `/courses/${courseId}/modules`;
+  }
+  
   return (
     <div>
       <h1>Listagem dos cursos</h1>
 
       <div className={styles.filter}>
-        <input placeholder="Digite aqui o nome do curso..." type="text" />
-        <button>
-          Pequisar
-        </button>
+        <input placeholder="Digite aqui o nome do curso..." type="text" value={search} onChange={handleSearchInput}/>
       </div>
 
       <div className={styles.actions}>
@@ -42,7 +46,7 @@ export default function Courses() {
 
       <div className={styles.courseList}>
         {courses.map((course) => (
-          <CourseCard key={course.id} course={course} />
+          <CourseCard redirectToModules={redirectToModules} redirectToEdit={redirectToEdit} key={course.id} course={course} />
         ))}
       </div>
     </div>

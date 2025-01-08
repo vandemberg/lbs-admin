@@ -1,6 +1,6 @@
 .courseCard {
   width: 16rem;
-  max-height: 24rem;
+  max-height: 32rem;
 
   display: flex;
   flex-direction: column;
@@ -48,8 +48,10 @@
   margin-bottom: 1rem;
   
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .courseCard .courseActions button {
@@ -64,6 +66,10 @@
 
 .courseCard .courseActions button.delete {
   background: var(--red-500);
+}
+
+.courseCard .courseActions button.videos {
+  background: var(--primary-color);
 }
 
 .courseActions button:hover {
