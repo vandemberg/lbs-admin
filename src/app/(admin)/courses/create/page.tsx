@@ -10,7 +10,7 @@ import { useState } from 'react';
 export default function CreateCourse() {
   const [course] = useState({} as Course);
   
-  const handleSubmit = async (courseData: Course) => {
+  const handleSubmit = async (courseData: FormData) => {
     try {
       await courseRequests.createCourse(courseData);
       alert("Curso criado com sucesso!");
