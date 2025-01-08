@@ -1,11 +1,13 @@
 import axios from 'axios';
 
 const adminApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL:
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://cursos.leadersincompany.com/api/admin",
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
 });
 
 adminApi.interceptors.request.use((config) => {
