@@ -1,4 +1,12 @@
 import "@/app/ui/global.css";
+import { Inter } from "next/font/google";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Toaster } from "sonner";
+
+const inter = Inter({ subsets: ["latin"] });
+
+const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,
@@ -7,8 +15,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body>
-        {children}
+      <body className={inter.className}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+          <ReactQueryDevtools initialIsOpen={false} />
+          <Toaster richColors position="top-right" />
+        </QueryClientProvider>
       </body>
     </html>
   );
