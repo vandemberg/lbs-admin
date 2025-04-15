@@ -28,17 +28,6 @@ export async function verifyToken(token: string) {
   }
 }
 
-export async function setTokenCookie(token: string) {
-  const cookieStore = await cookies()
-  cookieStore.set('auth_token', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    path: '/',
-    maxAge: 60 * 60 * 24 // 24 hours
-  })
-}
-
 export async function removeTokenCookie() {
   const cookieStore = await cookies()
   cookieStore.delete('auth_token')
