@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
-import { login } from "@/services/internal-api/login";
+import * as authRequest from "@/services/external-api/auth";
+import { AxiosError } from "axios";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -29,18 +30,22 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await login({
-        email: data.email,
-        password: data.password,
-      });
+      const response = await authRequest.login(data.email, data.password);
 
-      if (response.success) {
+      if (response.access_token && response.user) {
         router.push("/dashboard");
+        localStorage.setItem("token", response.access_token);
       } else {
         toast.error("Invalid credentials");
       }
-    } catch {
-      toast.error("An error occurred during login");
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast.error(
+          error.response?.data?.message || "An error occurred during login"
+        );
+      } else {
+        toast.error("An error occurred during login");
+      }
     }
   };
 

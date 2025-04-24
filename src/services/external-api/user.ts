@@ -1,33 +1,44 @@
-/*
-import api from "../api";
+import { externalApi } from "@/lib/axios";
+import { User } from "@/types/user";
 
-export const getUsers = async () => {
-  const response = await api.get("/users");
-
+export async function fetchUsers(): Promise<User[]> {
+  const response = await externalApi.get<User[]>("/users");
   return response.data;
-};
+}
 
-export const getUser = async (id: string) => {
-  const response = await api.get(`/users/${id}`);
+export async function registerUser(user: User): Promise<User> {
+  const payload = {
+    name: user.name,
+    email: user.email,
+    password: user.password,
+    password_confirmation: user.passwordVerify,
+    role: user.role,
+  };
 
+  const response = await externalApi.post<User>("/users", payload);
   return response.data;
-};
+}
 
-export const createUser = async (user: User) => {
-  const response = await api.post("/users", user);
+export async function updateUser(user: User): Promise<User> {
+  const payload = {
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
 
+  const response = await externalApi.put<User>(`/users/${user.id}`, payload);
   return response.data;
-};
+}
 
-export const updateUser = async (id: string, user: User) => {
-  const response = await api.put(`/users/${id}`, user);
+export async function updateUserPassword(user: User): Promise<void> {
+  const payload = {
+    password: user.password,
+    password_confirmation: user.passwordVerify,
+  };
 
-  return response.data;
-};
+  await externalApi.put(`/users/${user.id}`, payload);
+}
 
-export const deleteUser = async (id: string) => {
-  const response = await api.delete(`/users/${id}`);
-
-  return response.data;
-};
-*/
+export async function deleteUser(userId: number): Promise<void> {
+  await externalApi.delete(`/users/${userId}`);
+}
