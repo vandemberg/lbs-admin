@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { Home, Package, School, Users } from "lucide-react";
 
 export function SidebarNav({
   className,
@@ -9,11 +10,10 @@ export function SidebarNav({
   isCollapsed?: boolean;
 }) {
   const menuItems = [
-    { label: "Dashboard", href: "/dashboard", icon: "home" },
-    { label: "Usuários", href: "/users", icon: "users" },
-    { label: "Produtos", href: "/products", icon: "package" },
-    { label: "Pedidos", href: "/orders", icon: "shopping-cart" },
-    { label: "Configurações", href: "/settings", icon: "settings" },
+    { label: "Dashboard", href: "/dashboard", icon: <Home size={16} /> },
+    { label: "Usuários", href: "/users", icon: <Users size={16} /> },
+    { label: "Cursos", href: "/courses", icon: <Package size={16} /> },
+    { label: "Instrutores", href: "/settings", icon: <School size={16} /> },
   ];
 
   return (
@@ -30,7 +30,7 @@ export function SidebarNav({
         >
           <a href={item.href}>
             <span className={cn("mr-2", isCollapsed && "mr-0")}>
-              <span className="h-5 w-5" data-icon={item.icon} />
+              {item.icon}
             </span>
             {!isCollapsed && <span>{item.label}</span>}
           </a>
