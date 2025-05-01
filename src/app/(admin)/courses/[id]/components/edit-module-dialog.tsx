@@ -27,7 +27,7 @@ import { toast } from "sonner";
 import { Module } from "@/types/module";
 
 const formSchema = z.object({
-  title: z.string().min(1, "Título é obrigatório"),
+  name: z.string().min(1, "Título é obrigatório"),
   description: z.string(),
 });
 
@@ -51,7 +51,7 @@ export function EditModuleDialog({
   const form = useForm<EditModuleFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: module?.name || "",
+      name: module?.name || "",
       description: module?.description || "",
     },
   });
@@ -59,7 +59,7 @@ export function EditModuleDialog({
   useEffect(() => {
     if (module) {
       form.reset({
-        title: module?.name || "",
+        name: module?.name || "",
         description: module?.description || "",
       });
     }
@@ -72,7 +72,7 @@ export function EditModuleDialog({
       }
 
       return lbsHttp.updateCourseModule(courseId, module?.id, {
-        name: data.title,
+        name: data.name,
         description: data.description,
       });
     },
@@ -100,7 +100,7 @@ export function EditModuleDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="title"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Título</FormLabel>
