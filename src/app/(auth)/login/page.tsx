@@ -33,7 +33,7 @@ export default function LoginPage() {
       const response = await authRequest.login(data.email, data.password);
 
       if (response.access_token && response.user) {
-        router.push("/dashboard");
+        router.push("/courses");
         localStorage.setItem("token", response.access_token);
       } else {
         toast.error("Invalid credentials");

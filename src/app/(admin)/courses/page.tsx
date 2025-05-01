@@ -12,6 +12,7 @@ import { EditCourseModal } from "./components/edit-course-modal";
 import { RemoveCourseConfirmDialog } from "./components/remove-course-confirm-dialog";
 import { Course } from "@/types/course";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function CoursePage() {
   const [createCourseModalOpen, setCreateCourseModalOpen] = useState(false);
@@ -96,7 +97,9 @@ export default function CoursePage() {
             {courses?.map((course) => (
               <tr key={course.id} className="border-t">
                 <td className="px-4 py-2">{course.id}</td>
-                <td className="px-4 py-2">{course.title}</td>
+                <td className="px-4 py-2 break-all wrap-break-word">
+                  {course.title}
+                </td>
                 <td className="px-4 py-2">
                   <div className="flex items-center space-x-2">
                     <Switch
@@ -126,9 +129,12 @@ export default function CoursePage() {
                     variant="secondary"
                     size="sm"
                     className="mr-2 cursor-pointer"
+                    asChild
                   >
-                    Detalhes
-                    <Eye />
+                    <Link href={`/courses/${course.id}`}>
+                      Detalhes
+                      <Eye />
+                    </Link>
                   </Button>
                   <Button
                     variant="destructive"

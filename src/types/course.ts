@@ -1,3 +1,5 @@
+import { Module } from "./module";
+
 export interface Course {
   id: number;
   title: string;
@@ -8,6 +10,10 @@ export interface Course {
 
 export interface CourseList extends Course {
   uniqueAccess: number;
+}
+
+export interface CourseDetails extends Course {
+  modules: Module[];
 }
 
 export interface CourseForm {

@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   const baseUrl = `${url.protocol}//${url.host}`;
 
   if (token) {
-    return NextResponse.redirect(`${baseUrl}/dashboard`);
+    return NextResponse.redirect(`${baseUrl}/courses`);
   } else {
     return NextResponse.redirect(`${baseUrl}/login`);
   }
