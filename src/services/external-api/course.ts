@@ -1,3 +1,6 @@
+import { AddModuleFormValues } from "@/app/(admin)/courses/[id]/components/add-module-dialog";
+import { AddVideoFormValues } from "@/app/(admin)/courses/[id]/components/add-video-dialog";
+import { EditModuleFormValues } from "@/app/(admin)/courses/[id]/components/edit-module-dialog";
 import { externalApi } from "@/lib/axios";
 import { CourseDetails, CourseList } from "@/types/course";
 import { Module } from "@/types/module";
@@ -48,7 +51,7 @@ export async function deleteCourse(id: number) {
 }
 export async function createCourseModule(
   courseId: number,
-  data: any
+  data: AddModuleFormValues
 ): Promise<Module> {
   const response = await externalApi.post(`/courses/${courseId}/modules`, data);
   return response.data;
@@ -57,7 +60,7 @@ export async function createCourseModule(
 export async function updateCourseModule(
   courseId: number,
   id: number,
-  data: any
+  data: EditModuleFormValues
 ): Promise<unknown> {
   const response = await externalApi.put(
     `/courses/${courseId}/modules/${id}`,
@@ -69,22 +72,10 @@ export async function updateCourseModule(
 export async function createModuleVideo(
   courseId: number,
   moduleId: number,
-  data: any
+  data: AddVideoFormValues
 ) {
   const response = await externalApi.post(
     `courses/${courseId}/modules/${moduleId}/videos`,
-    data
-  );
-  return response.data;
-}
-
-export async function updateModuleVideo(
-  moduleId: number,
-  videoId: string,
-  data: any
-) {
-  const response = await externalApi.put(
-    `/modules/${moduleId}/videos/${videoId}`,
     data
   );
   return response.data;
