@@ -72,6 +72,24 @@ export default function CoursePage() {
     setOpenEditModuleDialog(true);
   };
 
+  const handleRemoveModule = (module: Module) => {
+    if (!window.confirm("Tem certeza que deseja remover este módulo?")) {
+      return;
+    }
+
+    lbsHttp
+      .removeModule(Number(id), module.id)
+      .then(() => {
+        toast.success("Módulo removido com sucesso");
+        queryClient.invalidateQueries({
+          queryKey: ["courses", id],
+        });
+      })
+      .catch(() => {
+        toast.error("Erro ao remover o módulo");
+      });
+  };
+
   const handleAddVideo = (module: Module) => {
     setSelectedModule(module);
     setOpenAddVideoDialog(true);
@@ -131,6 +149,11 @@ export default function CoursePage() {
                 <Button size="sm" onClick={() => handleAddVideo(module)}>
                   <PlusCircle className="h-4 w-4 mr-1" />
                   Adicionar Vídeo
+                </Button>
+
+                <Button size="sm" onClick={() => handleRemoveModule(module)}>
+                  <PlusCircle className="h-4 w-4 mr-1" />
+                  Remover módulo
                 </Button>
               </div>
             </CardHeader>
