@@ -13,7 +13,7 @@ export function SidebarNav({
     { label: "Dashboard", href: "/dashboard", icon: <Home size={16} /> },
     { label: "Usuários", href: "/users", icon: <Users size={16} /> },
     { label: "Cursos", href: "/courses", icon: <Package size={16} /> },
-    { label: "Instrutores", href: "/settings", icon: <School size={16} /> },
+    { label: "Instrutores", href: "/teachers", icon: <School size={16} /> },
   ];
 
   return (
