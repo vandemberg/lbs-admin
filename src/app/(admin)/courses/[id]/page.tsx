@@ -3,27 +3,42 @@
 import { useQuery } from "@tanstack/react-query";
 import lbsHttp from "@/services/external-api";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ModuleForm } from "./components/module-form";
+import { VideoForm } from "./components/video-form";
+import { QuizSection } from "./components/quiz-section";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Switch } from "@/components/ui/switch";
-import { PlusCircle, Edit, Trash2 } from "lucide-react";
-import { AddModuleDialog } from "@/app/(admin)/courses/[id]/components/add-module-dialog";
+  Edit,
+  Trash2,
+  GripVertical,
+  Eye,
+  Save,
+} from "lucide-react";
+import Link from "next/link";
 import { EditModuleDialog } from "@/app/(admin)/courses/[id]/components/edit-module-dialog";
-import { AddVideoDialog } from "@/app/(admin)/courses/[id]/components/add-video-dialog";
 import { EditVideoDialog } from "@/app/(admin)/courses/[id]/components/edit-video-dialog";
 import { Module } from "@/types/module";
 import { Video } from "@/types/video";
 import { queryClient } from "@/lib/react-query";
 import { toast } from "sonner";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { SortableVideoItem } from "./components/sortable-video-item";
+import { SortableModuleItem } from "./components/sortable-module-item";
 
 // Função para formatar segundos em horas:minutos:segundos
 const formatTime = (seconds: number | undefined): string => {
@@ -43,17 +58,51 @@ const formatTime = (seconds: number | undefined): string => {
 
 export default function CoursePage() {
   const { id } = useParams();
-  const [openAddModuleDialog, setOpenAddModuleDialog] = useState(false);
   const [openEditModuleDialog, setOpenEditModuleDialog] = useState(false);
-  const [openAddVideoDialog, setOpenAddVideoDialog] = useState(false);
   const [openEditVideoDialog, setOpenEditVideoDialog] = useState(false);
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [expandedModules, setExpandedModules] = useState<Set<number>>(
+    new Set()
+  );
+  const [_activeId, setActiveId] = useState<string | null>(null);
 
   const { data: course, isLoading } = useQuery({
     queryKey: ["courses", id],
     queryFn: () => lbsHttp.fetchCourseById(Number(id)),
   });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const sortedModules = useMemo(() => {
+    if (!course?.modules) return [];
+    return [...course.modules].sort((a, b) => (a.order || 0) - (b.order || 0));
+  }, [course]);
+  
+  // Criar um mapa de todos os vídeos para facilitar acesso
+  const allVideos = useMemo(() => {
+    return sortedModules.flatMap((module) =>
+      module.videos.map((video) => ({
+        ...video,
+        moduleId: module.id,
+      }))
+    );
+  }, [sortedModules]);
+
+  // Obter todos os IDs de vídeos para o SortableContext
+  const videoIds = useMemo(() => {
+    return allVideos.map((video) => `video-${video.id}`);
+  }, [allVideos]);
+
+  // Obter todos os IDs de módulos para o SortableContext
+  const moduleIds = useMemo(() => {
+    return sortedModules.map((module) => `module-${module.id}`);
+  }, [sortedModules]);
 
   if (Number.isNaN(Number(id))) {
     return <div>Invalid course ID</div>;
@@ -62,10 +111,6 @@ export default function CoursePage() {
   if (isLoading) {
     return <div>Carregando...</div>;
   }
-
-  const handleAddModule = () => {
-    setOpenAddModuleDialog(true);
-  };
 
   const handleEditModule = (module: Module) => {
     setSelectedModule(module);
@@ -90,24 +135,10 @@ export default function CoursePage() {
       });
   };
 
-  const handleAddVideo = (module: Module) => {
-    setSelectedModule(module);
-    setOpenAddVideoDialog(true);
-  };
-
   const handleEditVideo = (video: Video, module: Module) => {
     setSelectedVideo(video);
     setSelectedModule(module);
     setOpenEditVideoDialog(true);
-  };
-
-  const handleToggleVideoVisibility = (module: Module, video: Video) => {
-    const status = video.status === "published" ? "draft" : "published";
-    lbsHttp.changeStatusVideo(Number(id), module.id, video.id, status);
-    toast.success("Status do vídeo atualizado com sucesso");
-    queryClient.invalidateQueries({
-      queryKey: ["courses", id],
-    });
   };
 
   const handleDeleteVideo = (module: Module, video: Video) => {
@@ -122,138 +153,330 @@ export default function CoursePage() {
     });
   };
 
+  const toggleModule = (moduleId: number) => {
+    setExpandedModules((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(moduleId)) {
+        newSet.delete(moduleId);
+      } else {
+        newSet.add(moduleId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over || !course) return;
+
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    // Verificar se é um módulo sendo arrastado
+    if (activeId.startsWith("module-") && overId.startsWith("module-")) {
+      const activeModuleId = parseInt(activeId.replace("module-", ""));
+      const overModuleId = parseInt(overId.replace("module-", ""));
+
+      if (activeModuleId === overModuleId) return;
+
+      // Encontrar os módulos envolvidos
+      const activeModule = course.modules?.find((m) => m.id === activeModuleId);
+      const overModule = course.modules?.find((m) => m.id === overModuleId);
+
+      if (!activeModule || !overModule) return;
+
+      // Encontrar todos os módulos (excluindo o módulo sendo movido)
+      const otherModules = (course.modules || []).filter(
+        (m) => m.id !== activeModuleId
+      );
+
+      // Encontrar a posição do módulo de destino
+      const overIndex = otherModules.findIndex((m) => m.id === overModuleId);
+
+      // Criar nova lista com o módulo movido na posição correta
+      const newModules = [...otherModules];
+      newModules.splice(overIndex, 0, activeModule);
+
+      // Preparar dados para a API - todos os módulos com nova ordem
+      const reorderData = newModules.map((module, index) => ({
+        id: module.id,
+        order: index + 1,
+      }));
+
+      try {
+        await lbsHttp.reorderModules(Number(id), reorderData);
+        toast.success("Ordem dos módulos atualizada com sucesso");
+        queryClient.invalidateQueries({
+          queryKey: ["courses", id],
+        });
+      } catch (error) {
+        toast.error("Erro ao atualizar ordem dos módulos");
+        console.error(error);
+      }
+      return;
+    }
+
+    // Lógica para vídeos (mantida como estava)
+    if (activeId.startsWith("video-") && overId.startsWith("video-")) {
+      const activeVideoId = parseInt(activeId.replace("video-", ""));
+      const overVideoId = parseInt(overId.replace("video-", ""));
+
+      if (activeVideoId === overVideoId) return;
+
+      // Encontrar os vídeos e módulos envolvidos
+      let activeVideo: Video | undefined;
+      let overVideo: Video | undefined;
+      let sourceModule: Module | undefined;
+      let targetModule: Module | undefined;
+
+      for (const module of course.modules || []) {
+        const foundActive = module.videos?.find((v) => v.id === activeVideoId);
+        const foundOver = module.videos?.find((v) => v.id === overVideoId);
+
+        if (foundActive) {
+          activeVideo = foundActive;
+          sourceModule = module;
+        }
+        if (foundOver) {
+          overVideo = foundOver;
+          targetModule = module;
+        }
+      }
+
+      if (!activeVideo || !overVideo || !sourceModule || !targetModule) return;
+
+      // Encontrar todos os vídeos do módulo destino (excluindo o vídeo sendo movido)
+      const targetModuleVideos = (targetModule.videos || []).filter(
+        (v) => v.id !== activeVideoId
+      );
+
+      // Encontrar a posição do vídeo de destino no módulo destino
+      const overIndex = targetModuleVideos.findIndex(
+        (v) => v.id === overVideoId
+      );
+
+      // Criar nova lista com o vídeo movido na posição correta
+      const newTargetVideos = [...targetModuleVideos];
+      newTargetVideos.splice(overIndex, 0, activeVideo);
+
+      // Preparar dados para a API - todos os vídeos do módulo destino com nova ordem
+      const reorderData = newTargetVideos.map((video, index) => ({
+        id: video.id,
+        order: index + 1,
+        module_id: targetModule!.id,
+      }));
+
+      // Se o vídeo mudou de módulo, também atualizar ordem dos vídeos que ficaram no módulo original
+      if (sourceModule.id !== targetModule.id) {
+        const sourceModuleVideos = (sourceModule.videos || []).filter(
+          (v) => v.id !== activeVideoId
+        );
+
+        const sourceReorderData = sourceModuleVideos.map((video, index) => ({
+          id: video.id,
+          order: index + 1,
+          module_id: sourceModule.id,
+        }));
+
+        reorderData.push(...sourceReorderData);
+      }
+
+      try {
+        await lbsHttp.reorderVideos(Number(id), reorderData);
+        toast.success("Ordem dos vídeos atualizada com sucesso");
+        queryClient.invalidateQueries({
+          queryKey: ["courses", id],
+        });
+      } catch (error) {
+        toast.error("Erro ao atualizar ordem dos vídeos");
+        console.error(error);
+      }
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Curso: {course?.title}</h2>
-        <Button onClick={handleAddModule}>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Adicionar Módulo
-        </Button>
+    <div className="mx-auto max-w-7xl space-y-8">
+      {/* Page Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight">
+            {course?.title || "Estrutura do Curso"}
+          </h1>
+          <p className="text-muted-foreground">
+            Gerencie os módulos e adicione vídeos do YouTube para montar seu
+            curso.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" asChild>
+            <Link href={`/courses/${id}/preview`}>
+              <Eye className="h-4 w-4 mr-2" />
+              Visualizar
+            </Link>
+          </Button>
+          <Button>
+            <Save className="h-4 w-4 mr-2" />
+            Publicar Curso
+          </Button>
+        </div>
       </div>
 
-      {(course?.modules ?? []).length > 0 ? (
-        (course?.modules ?? []).map((module: Module) => (
-          <Card key={module.id} className="mb-6">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-xl">{module.name}</CardTitle>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEditModule(module)}
-                >
-                  <Edit className="h-4 w-4 mr-1" />
-                  Editar Módulo
-                </Button>
-                <Button size="sm" onClick={() => handleAddVideo(module)}>
-                  <PlusCircle className="h-4 w-4 mr-1" />
-                  Adicionar Vídeo
-                </Button>
+      {/* Module Form */}
+      <ModuleForm courseId={Number(id)} />
 
-                <Button size="sm" onClick={() => handleRemoveModule(module)}>
-                  <PlusCircle className="h-4 w-4 mr-1" />
-                  Remover módulo
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Título</TableHead>
-                    <TableHead>Duração</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {module.videos?.length > 0 ? (
-                    module.videos.map((video: Video) => (
-                      <TableRow key={video.id}>
-                        <TableCell className="wrap-break-word whitespace-normal max-w-[50%]">
-                          {video.title}
-                        </TableCell>
-                        <TableCell>
-                          {formatTime(video.time_in_seconds)}
-                        </TableCell>
-                        <TableCell>{video.status}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => handleEditVideo(video, module)}
+      <hr className="border-border my-4" />
+
+      {/* Modules Accordion */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={moduleIds}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="space-y-6">
+            {sortedModules.length > 0 ? (
+              sortedModules.map((module: Module, index: number) => {
+                const isOpen = expandedModules.has(module.id);
+                const moduleVideoIds = (module.videos || [])
+                  .map((video) => `video-${video.id}`)
+                  .filter((id) => videoIds.includes(id));
+
+                return (
+                  <SortableModuleItem
+                    key={module.id}
+                    module={module}
+                    moduleIndex={index}
+                  >
+                    {({ attributes, listeners, isDragging }) => (
+                      <div className="flex flex-col rounded-xl border bg-card">
+                        {/* Module Header */}
+                        <div className="flex cursor-pointer list-none items-center justify-between gap-6 p-4">
+                          <div className="flex items-center gap-3">
+                            <div
+                              {...attributes}
+                              {...listeners}
+                              className="touch-none cursor-grab active:cursor-grabbing"
                             >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <div className="flex items-center space-x-2">
-                              <Switch
-                                className="cursor-pointer"
-                                checked={video.status === "published"}
-                                onCheckedChange={() =>
-                                  handleToggleVideoVisibility(module, video)
-                                }
-                              />
+                              <GripVertical className="h-5 w-5 text-muted-foreground" />
                             </div>
+                            <div>
+                              <p className="text-base font-semibold">
+                                Módulo {index + 1}: {module.name}
+                              </p>
+                              {module.description && (
+                                <p className="text-sm text-muted-foreground">
+                                  {module.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4">
                             <Button
-                              variant="destructive"
-                              size="icon"
-                              onClick={() => handleDeleteVideo(module, video)}
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditModule(module)}
+                              className="text-muted-foreground hover:text-primary"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Edit className="h-4 w-4 mr-1" />
+                              Editar
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRemoveModule(module)}
+                              className="text-destructive/80 hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              Remover
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleModule(module.id)}
+                              className="text-muted-foreground"
+                            >
+                              {isOpen ? "Ocultar" : "Expandir"}
                             </Button>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center">
-                        Nenhum vídeo encontrado para este módulo
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        ))
-      ) : (
-        <Card>
-          <CardContent className="py-10 text-center">
-            <p className="text-muted-foreground">
-              Nenhum módulo encontrado para este curso
-            </p>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={handleAddModule}
-            >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Adicionar Primeiro Módulo
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+                        </div>
 
-      <AddModuleDialog
-        open={openAddModuleDialog}
-        onOpenChange={setOpenAddModuleDialog}
-        courseId={Number(id)}
-      />
+                        {/* Module Content */}
+                        {isOpen && (
+                          <div className="flex flex-col border-t p-4 md:p-6">
+                            {/* Videos List */}
+                            {module.videos && module.videos.length > 0 && (
+                              <div className="mb-6 space-y-4">
+                                <SortableContext
+                                  items={moduleVideoIds}
+                                  strategy={verticalListSortingStrategy}
+                                >
+                                  {module.videos.map(
+                                    (video: Video, videoIndex: number) => (
+                                      <SortableVideoItem
+                                        key={video.id}
+                                        video={video}
+                                        module={module}
+                                        moduleIndex={index}
+                                        videoIndex={videoIndex}
+                                        courseId={id as string}
+                                        formatTime={formatTime}
+                                        onEdit={handleEditVideo}
+                                        onDelete={handleDeleteVideo}
+                                      />
+                                    )
+                                  )}
+                                </SortableContext>
+                              </div>
+                            )}
 
+                            {/* Video Form */}
+                            <VideoForm
+                              moduleId={module.id}
+                              onSuccess={() => {
+                                queryClient.invalidateQueries({
+                                  queryKey: ["courses", id],
+                                });
+                              }}
+                            />
+
+                            {/* Quiz Section */}
+                            <QuizSection
+                              moduleId={module.id}
+                              moduleName={module.name}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </SortableModuleItem>
+                );
+              })
+            ) : (
+              <div className="text-center py-12 text-muted-foreground">
+                Nenhum módulo encontrado. Use o formulário acima para criar o
+                primeiro módulo.
+              </div>
+            )}
+          </div>
+        </SortableContext>
+      </DndContext>
+
+      {/* Dialogs */}
       <EditModuleDialog
         courseId={Number(id)}
         open={openEditModuleDialog}
         onOpenChange={setOpenEditModuleDialog}
         module={selectedModule}
-      />
-
-      <AddVideoDialog
-        open={openAddVideoDialog}
-        onOpenChange={setOpenAddVideoDialog}
-        moduleId={selectedModule?.id}
       />
 
       <EditVideoDialog

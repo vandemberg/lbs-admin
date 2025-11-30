@@ -33,8 +33,14 @@ export default function LoginPage() {
       const response = await authRequest.login(data.email, data.password);
 
       if (response.access_token && response.user) {
-        router.push("/courses");
         localStorage.setItem("token", response.access_token);
+        
+        // Armazena platform_id se disponível
+        if (response.platform_id) {
+          localStorage.setItem("platform_id", String(response.platform_id));
+        }
+        
+        router.push("/courses");
       } else {
         toast.error("Invalid credentials");
       }

@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { Aside } from "./components/aside";
 import { Navbar } from "./components/navbar";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -15,7 +14,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const router = useRouter();
 
   async function handleLogout() {
@@ -26,7 +24,7 @@ export default function RootLayout({
     const interceptions = externalApi.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (error.response.status === 401) {
+        if (error.response?.status === 401) {
           router.push("/login");
         }
         return Promise.reject(error);
@@ -40,22 +38,13 @@ export default function RootLayout({
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col">
-        <Navbar
-          handleLogout={handleLogout}
-          isCollapsed={isCollapsed}
-          setIsCollapsed={setIsCollapsed}
-        />
+      <div className="relative flex min-h-screen w-full flex-col">
+        <Navbar handleLogout={handleLogout} />
 
         <div className="flex flex-1">
-          <Aside isCollapsed={isCollapsed} />
+          <Aside />
 
-          <main
-            className={cn(
-              "flex-1 px-4 py-6 md:px-6 md:py-8",
-              isCollapsed ? "md:ml-16" : "md:ml-64"
-            )}
-          >
+          <main className="flex-1 md:ml-72 px-4 py-8 sm:px-6 lg:px-8">
             {children}
           </main>
         </div>

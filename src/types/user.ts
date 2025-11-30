@@ -5,6 +5,8 @@ export interface User {
   name: string;
   email: string;
   role: string;
+  progress_percent?: number | null | undefined;
+  completed_videos?: number | null | undefined;
   password?: string;
   passwordVerify?: string;
   created_at?: string | null | undefined;

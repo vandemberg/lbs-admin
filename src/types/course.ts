@@ -1,10 +1,12 @@
 import { Module } from "./module";
 
+export type CourseStatus = "draft" | "inprogress" | "complete";
+
 export interface Course {
   id: number;
   title: string;
   description: string;
-  status: boolean;
+  status: CourseStatus;
   thumbnail: string;
 }
 
@@ -20,5 +22,5 @@ export interface CourseForm {
   title: string;
   description?: string;
   thumbnail?: File | null;
-  status?: boolean;
+  status?: CourseStatus;
 }

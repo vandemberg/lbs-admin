@@ -9,6 +9,7 @@ export interface Video {
   time_in_seconds?: number; // campo nullable (YES)
   courseId: number; // course_id no banco
   moduleId: number; // module_id no banco
+  order: number; // ordem do vídeo dentro do módulo
   createdAt?: string; // campo nullable (YES)
   updatedAt?: string; // campo nullable (YES)
 }

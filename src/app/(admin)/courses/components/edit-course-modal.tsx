@@ -61,6 +61,49 @@ export function EditCourseModal({
     },
   });
 
+  // Função para normalizar a URL da thumbnail
+  const normalizeThumbnailUrl = (thumbnail: string | null | undefined): string | null => {
+    if (!thumbnail || typeof thumbnail !== "string" || thumbnail.trim() === "") {
+      return null;
+    }
+
+    const trimmedThumbnail = thumbnail.trim();
+
+    // Se é uma data URL, retornar como está (não precisa validação de URL)
+    if (trimmedThumbnail.startsWith("data:")) {
+      return trimmedThumbnail;
+    }
+
+    // Se já é uma URL completa (http/https), validar e retornar
+    if (trimmedThumbnail.startsWith("http://") || trimmedThumbnail.startsWith("https://")) {
+      try {
+        // Validar se é uma URL válida
+        new URL(trimmedThumbnail);
+        return trimmedThumbnail;
+      } catch {
+        // Se não for uma URL válida, retornar null
+        return null;
+      }
+    }
+
+    // Se é um caminho relativo, converter para URL completa usando a API base URL
+    const apiBaseUrl = process.env.NEXT_PUBLIC_EXTERNAL_API_URL || "";
+    if (!apiBaseUrl) {
+      return null;
+    }
+
+    try {
+      const fullUrl = trimmedThumbnail.startsWith("/")
+        ? `${apiBaseUrl}${trimmedThumbnail}`
+        : `${apiBaseUrl}/${trimmedThumbnail}`;
+      // Validar se a URL completa é válida
+      new URL(fullUrl);
+      return fullUrl;
+    } catch {
+      return null;
+    }
+  };
+
   // Atualizar formulário quando o curso mudar
   useEffect(() => {
     if (course) {
@@ -71,11 +114,8 @@ export function EditCourseModal({
       });
 
       // Se o curso tiver uma thumbnail, definir o preview
-      if (course.thumbnail) {
-        setThumbnailPreview(course.thumbnail);
-      } else {
-        setThumbnailPreview(null);
-      }
+      const normalizedThumbnail = normalizeThumbnailUrl(course.thumbnail);
+      setThumbnailPreview(normalizedThumbnail);
     }
   }, [course, form]);
 

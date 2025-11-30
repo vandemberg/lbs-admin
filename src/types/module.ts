@@ -6,6 +6,7 @@ export interface Module {
   name: string;
   description: string | null;
   status: "draft" | "published";
+  order: number; // ordem do módulo dentro do curso
   createdAt: string | null;
   updatedAt: string | null;
 

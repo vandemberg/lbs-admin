@@ -25,6 +25,20 @@ export async function disableCourse(id: number) {
   return response.data;
 }
 
+export async function updateCourseStatus(
+  id: number,
+  status: "draft" | "inprogress" | "complete"
+) {
+  const formData = new FormData();
+  formData.append("status", status);
+  const response = await externalApi.post(`/courses/${id}/update`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+}
+
 export async function createCourse(formData: FormData) {
   const response = await externalApi.post("/courses", formData, {
     headers: {
@@ -77,6 +91,39 @@ export async function createModuleVideo(
   const response = await externalApi.post(
     `courses/${courseId}/modules/${moduleId}/videos`,
     data
+  );
+  return response.data;
+}
+
+export interface ReorderVideoItem {
+  id: number;
+  order: number;
+  module_id: number;
+}
+
+export async function reorderVideos(
+  courseId: number,
+  videos: ReorderVideoItem[]
+) {
+  const response = await externalApi.post(
+    `/courses/${courseId}/videos/reorder`,
+    { videos }
+  );
+  return response.data;
+}
+
+export interface ReorderModuleItem {
+  id: number;
+  order: number;
+}
+
+export async function reorderModules(
+  courseId: number,
+  modules: ReorderModuleItem[]
+) {
+  const response = await externalApi.post(
+    `/courses/${courseId}/modules/reorder`,
+    { modules }
   );
   return response.data;
 }
