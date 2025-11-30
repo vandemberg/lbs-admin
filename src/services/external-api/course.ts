@@ -1,6 +1,6 @@
-import { AddModuleFormValues } from "@/app/(admin)/courses/[id]/components/add-module-dialog";
 import { AddVideoFormValues } from "@/app/(admin)/courses/[id]/components/add-video-dialog";
 import { EditModuleFormValues } from "@/app/(admin)/courses/[id]/components/edit-module-dialog";
+import { ModuleFormValues } from "@/app/(admin)/courses/[id]/components/module-form";
 import { externalApi } from "@/lib/axios";
 import { CourseDetails, CourseList } from "@/types/course";
 import { Module } from "@/types/module";
@@ -65,7 +65,7 @@ export async function deleteCourse(id: number) {
 }
 export async function createCourseModule(
   courseId: number,
-  data: AddModuleFormValues
+  data: ModuleFormValues
 ): Promise<Module> {
   const response = await externalApi.post(`/courses/${courseId}/modules`, data);
   return response.data;

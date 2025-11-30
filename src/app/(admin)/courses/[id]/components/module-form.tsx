@@ -17,7 +17,7 @@ const formSchema = z.object({
   description: z.string().optional(),
 });
 
-type ModuleFormValues = z.infer<typeof formSchema>;
+export type ModuleFormValues = z.infer<typeof formSchema>;
 
 interface ModuleFormProps {
   courseId: number;
@@ -63,7 +63,8 @@ export function ModuleForm({ courseId }: ModuleFormProps) {
     <div className="rounded-xl border bg-card p-6 shadow-sm">
       <h2 className="text-xl font-semibold mb-1">Criar Novo Módulo</h2>
       <p className="text-sm text-muted-foreground mb-6">
-        Organize seu curso em seções. Os módulos podem ser reordenados a qualquer momento.
+        Organize seu curso em seções. Os módulos podem ser reordenados a
+        qualquer momento.
       </p>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
@@ -107,4 +108,3 @@ export function ModuleForm({ courseId }: ModuleFormProps) {
     </div>
   );
 }
-
