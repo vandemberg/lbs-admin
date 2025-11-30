@@ -10,7 +10,6 @@ interface SortableModuleItemProps {
   moduleIndex: number;
   children: (props: {
     attributes: UseSortableArguments["attributes"];
-    listeners: UseSortableArguments["listeners"];
     isDragging: boolean;
   }) => React.ReactNode;
 }
@@ -22,20 +21,14 @@ export function SortableModuleItem({
 }: SortableModuleItemProps) {
   // moduleIndex is used for potential future sorting features
   void _moduleIndex;
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: `module-${module.id}`,
-    data: {
-      type: "module",
-      module,
-    },
-  });
+  const { attributes, setNodeRef, transform, transition, isDragging } =
+    useSortable({
+      id: `module-${module.id}`,
+      data: {
+        type: "module",
+        module,
+      },
+    });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -49,7 +42,7 @@ export function SortableModuleItem({
       style={style}
       className={`${isDragging ? "cursor-grabbing" : ""}`}
     >
-      {children({ attributes, listeners, isDragging })}
+      {children({ attributes, isDragging })}
     </div>
   );
 }
