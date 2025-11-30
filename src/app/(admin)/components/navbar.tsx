@@ -12,7 +12,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { Bell, BookOpen, Moon, Sun, Users, ChevronDown, LogOut, User, Menu } from "lucide-react";
+import { Bell, BookOpen, Moon, Sun, Users, LogOut, User, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -102,7 +102,6 @@ export function Navbar({ handleLogout }: NavbarProps) {
         </div>
         <div className="hidden items-center gap-6 pl-10 md:flex">
           {navItems.map((item) => {
-            const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
               <Link

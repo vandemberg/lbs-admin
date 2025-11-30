@@ -3,22 +3,25 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Module } from "@/types/module";
+import type { UseSortableArguments } from "@dnd-kit/sortable";
 
 interface SortableModuleItemProps {
   module: Module;
   moduleIndex: number;
   children: (props: {
-    attributes: any;
-    listeners: any;
+    attributes: UseSortableArguments["attributes"];
+    listeners: UseSortableArguments["listeners"];
     isDragging: boolean;
   }) => React.ReactNode;
 }
 
 export function SortableModuleItem({
   module,
-  moduleIndex,
+  moduleIndex: _moduleIndex,
   children,
 }: SortableModuleItemProps) {
+  // moduleIndex is used for potential future sorting features
+  void _moduleIndex;
   const {
     attributes,
     listeners,

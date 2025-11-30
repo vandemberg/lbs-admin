@@ -48,7 +48,7 @@ export default function HelpCategoriesPage() {
   );
 
   const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
+  const [search] = useState("");
 
   const { data: categories = [] } = useQuery({
     queryKey: ["help-categories"],
@@ -73,8 +73,11 @@ export default function HelpCategoriesPage() {
       setIsDialogOpen(false);
       form.reset();
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.error || "Erro ao criar categoria");
+    onError: (error: unknown) => {
+      const errorMessage = error && typeof error === 'object' && 'response' in error
+        ? (error.response as { data?: { error?: string } })?.data?.error
+        : undefined;
+      toast.error(errorMessage || "Erro ao criar categoria");
     },
   });
 
@@ -88,10 +91,11 @@ export default function HelpCategoriesPage() {
       setSelectedCategory(null);
       form.reset();
     },
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.error || "Erro ao atualizar categoria"
-      );
+    onError: (error: unknown) => {
+      const errorMessage = error && typeof error === 'object' && 'response' in error
+        ? (error.response as { data?: { error?: string } })?.data?.error
+        : undefined;
+      toast.error(errorMessage || "Erro ao atualizar categoria");
     },
   });
 
@@ -103,8 +107,11 @@ export default function HelpCategoriesPage() {
       setIsDeleteDialogOpen(false);
       setSelectedCategory(null);
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.error || "Erro ao remover categoria");
+    onError: (error: unknown) => {
+      const errorMessage = error && typeof error === 'object' && 'response' in error
+        ? (error.response as { data?: { error?: string } })?.data?.error
+        : undefined;
+      toast.error(errorMessage || "Erro ao remover categoria");
     },
   });
 

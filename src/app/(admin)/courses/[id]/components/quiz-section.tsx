@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Plus, Trash2, GripVertical, Save, FileQuestion } from "lucide-react";
 import { QuizQuestion, QuestionType } from "@/types/quiz";
 import { toast } from "sonner";
@@ -13,9 +12,9 @@ interface QuizSectionProps {
   moduleName: string;
 }
 
-export function QuizSection({ moduleId, moduleName }: QuizSectionProps) {
-  const [questions, setQuestions] = useState<FileQuestionQuestion[]>([]);
-  const [isCreating, setIsCreating] = useState(false);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function QuizSection({ moduleId: _moduleId, moduleName: _moduleName }: QuizSectionProps) {
+  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
 
   const addQuestion = (type: QuestionType) => {
     const newQuestion: QuizQuestion = {
@@ -26,14 +25,13 @@ export function QuizSection({ moduleId, moduleName }: QuizSectionProps) {
       order: questions.length + 1,
     };
     setQuestions([...questions, newQuestion]);
-    setIsCreating(true);
   };
 
   const removeQuestion = (index: number) => {
     setQuestions(questions.filter((_, i) => i !== index));
   };
 
-  const updateQuestion = (index: number, field: keyof QuizQuestion, value: any) => {
+  const updateQuestion = (index: number, field: keyof QuizQuestion, value: string | number | boolean | string[] | undefined) => {
     const updated = [...questions];
     updated[index] = { ...updated[index], [field]: value };
     setQuestions(updated);

@@ -21,13 +21,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 
 export default function UsersPage() {
@@ -35,7 +28,6 @@ export default function UsersPage() {
   const [isNewUserOpen, setIsNewUserOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [courseFilter, setCourseFilter] = useState("all");
 
   const { data: users = [] } = useQuery({
     queryKey: ["users"],

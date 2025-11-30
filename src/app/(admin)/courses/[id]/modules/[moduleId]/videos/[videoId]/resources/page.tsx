@@ -52,8 +52,6 @@ type ResourceFormValues = z.infer<typeof formSchema>;
 export default function VideoResourcesPage() {
   const params = useParams();
   const router = useRouter();
-  const courseId = Number(params.id);
-  const moduleId = Number(params.moduleId);
   const videoId = Number(params.videoId);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);

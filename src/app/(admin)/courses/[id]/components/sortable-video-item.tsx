@@ -6,7 +6,7 @@ import { GripVertical } from "lucide-react";
 import { Video } from "@/types/video";
 import { Module } from "@/types/module";
 import { Button } from "@/components/ui/button";
-import { FileText, StickyNote, Edit, Trash2 } from "lucide-react";
+import { FileText, StickyNote } from "lucide-react";
 import Link from "next/link";
 
 interface SortableVideoItemProps {

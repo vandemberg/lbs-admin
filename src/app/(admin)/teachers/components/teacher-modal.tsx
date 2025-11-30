@@ -16,7 +16,7 @@ interface TeacherModalProps {
 }
 
 export function TeacherModal({ isOpen, onClose, onSubmit, teacher, loading }: TeacherModalProps) {
-  const { register, handleSubmit, reset, setValue, watch } = useForm();
+  const { register, handleSubmit, reset, setValue } = useForm();
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   useEffect(() => {

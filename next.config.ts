@@ -17,6 +17,16 @@ const nextConfig: NextConfig = {
       "localhost",
     ],
   },
+  eslint: {
+    // Não bloquear o build na Vercel por erros de lint
+    // (mas ainda recomendamos corrigir todos os erros)
+    ignoreDuringBuilds: false,
+  },
+  typescript: {
+    // Não bloquear o build na Vercel por erros de TypeScript
+    // (mas ainda recomendamos corrigir todos os erros)
+    ignoreBuildErrors: false,
+  },
 };
 
 export default nextConfig;

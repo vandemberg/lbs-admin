@@ -1,8 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
-import { BookOpen, Plus, Settings, LogOut } from "lucide-react";
+import { BookOpen, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";

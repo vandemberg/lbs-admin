@@ -45,7 +45,8 @@ export function AddVideoDialog({
   onOpenChange,
   moduleId,
 }: AddVideoDialogProps) {
-  const { id: courseId } = useParams();
+  const params = useParams();
+  const courseId = Number(params.id);
   const queryClient = useQueryClient();
 
   const form = useForm<AddVideoFormValues>({
@@ -63,7 +64,7 @@ export function AddVideoDialog({
         throw new Error("Module ID is required");
       }
 
-      return lbsHttp.createModuleVideo(Number(courseId), moduleId, data);
+      return lbsHttp.createModuleVideo(courseId, moduleId, data);
     },
     onSuccess: () => {
       toast.success("O vídeo foi adicionado com sucesso.");

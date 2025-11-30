@@ -65,7 +65,7 @@ export default function CoursePage() {
       queryClient.invalidateQueries({
         queryKey: ["courses"],
       });
-    } catch (error) {
+    } catch {
       toast.error("Erro ao alterar status do curso");
     }
   }

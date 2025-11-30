@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import * as annotationService from "@/services/external-api/annotation";
-import { Annotation } from "@/types/annotation";
 
 export default function AnnotationsPage() {
   const { data: annotations = [] } = useQuery({

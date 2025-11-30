@@ -65,7 +65,7 @@ export default function CoursePage() {
   const [expandedModules, setExpandedModules] = useState<Set<number>>(
     new Set()
   );
-  const [_activeId, setActiveId] = useState<string | null>(null);
+  const [, setActiveId] = useState<string | null>(null);
 
   const { data: course, isLoading } = useQuery({
     queryKey: ["courses", id],
@@ -235,17 +235,17 @@ export default function CoursePage() {
       let sourceModule: Module | undefined;
       let targetModule: Module | undefined;
 
-      for (const module of course.modules || []) {
-        const foundActive = module.videos?.find((v) => v.id === activeVideoId);
-        const foundOver = module.videos?.find((v) => v.id === overVideoId);
+      for (const courseModule of course.modules || []) {
+        const foundActive = courseModule.videos?.find((v) => v.id === activeVideoId);
+        const foundOver = courseModule.videos?.find((v) => v.id === overVideoId);
 
         if (foundActive) {
           activeVideo = foundActive;
-          sourceModule = module;
+          sourceModule = courseModule;
         }
         if (foundOver) {
           overVideo = foundOver;
-          targetModule = module;
+          targetModule = courseModule;
         }
       }
 
@@ -357,7 +357,7 @@ export default function CoursePage() {
                     module={module}
                     moduleIndex={index}
                   >
-                    {({ attributes, listeners, isDragging }) => (
+                    {({ attributes, listeners }) => (
                       <div className="flex flex-col rounded-xl border bg-card">
                         {/* Module Header */}
                         <div className="flex cursor-pointer list-none items-center justify-between gap-6 p-4">

@@ -61,11 +61,12 @@ export function AddUserModal({
       toast.success("Convite enviado com sucesso!");
       setIsDialogOpen(false);
       form.reset();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro ao enviar convite:", error);
-      const errorMessage =
-        error?.response?.data?.message || "Erro ao enviar convite.";
-      toast.error(errorMessage);
+      const errorMessage = error && typeof error === 'object' && 'response' in error
+        ? (error.response as { data?: { message?: string } })?.data?.message
+        : undefined;
+      toast.error(errorMessage || "Erro ao enviar convite.");
     } finally {
       setIsLoading(false);
     }

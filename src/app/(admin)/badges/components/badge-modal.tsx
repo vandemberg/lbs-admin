@@ -86,7 +86,7 @@ export function BadgeModal({ isOpen, onClose, badge }: BadgeModalProps) {
     if (badge) {
       form.reset({
         title: badge.title,
-        type: badge.type as any,
+        type: badge.type as BadgeFormValues["type"],
         icon: badge.icon || "workspace_premium",
         color: badge.color,
         threshold: badge.threshold,
@@ -214,7 +214,7 @@ export function BadgeModal({ isOpen, onClose, badge }: BadgeModalProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {Object.entries(BADGE_TYPES).map(([key, value]) => (
+                      {Object.entries(BADGE_TYPES).map(([, value]) => (
                         <SelectItem key={value} value={value}>
                           {BADGE_TYPE_LABELS[value]}
                         </SelectItem>
