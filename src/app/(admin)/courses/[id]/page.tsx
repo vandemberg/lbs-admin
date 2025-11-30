@@ -357,14 +357,13 @@ export default function CoursePage() {
                     module={module}
                     moduleIndex={index}
                   >
-                    {({ attributes, listeners }) => (
+                    {({ attributes }) => (
                       <div className="flex flex-col rounded-xl border bg-card">
                         {/* Module Header */}
                         <div className="flex cursor-pointer list-none items-center justify-between gap-6 p-4">
                           <div className="flex items-center gap-3">
                             <div
                               {...attributes}
-                              {...listeners}
                               className="touch-none cursor-grab active:cursor-grabbing"
                             >
                               <GripVertical className="h-5 w-5 text-muted-foreground" />

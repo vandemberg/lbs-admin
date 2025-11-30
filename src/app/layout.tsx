@@ -40,6 +40,7 @@ export default function RootLayout({
         style={{
           fontFamily: "var(--font-display), Inter, Poppins, sans-serif",
         }}
+        suppressHydrationWarning
       >
         <MaterialSymbolsLoader />
         <ThemeProvider

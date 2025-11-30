@@ -56,7 +56,7 @@ export function VideoForm({ moduleId, onSuccess }: VideoFormProps) {
     mutationFn: (data: VideoFormValues) =>
       lbsHttp.createModuleVideo(courseId, moduleId, {
         title: data.title,
-        description: data.description,
+        description: data.description || "",
         url: data.url,
       }),
     onSuccess: () => {
