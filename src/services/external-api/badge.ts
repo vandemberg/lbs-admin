@@ -2,7 +2,6 @@ import { externalApi } from "@/lib/axios";
 import { Badge, BadgeForm } from "@/types/badge";
 
 export async function fetchBadges(): Promise<Badge[]> {
-  // TODO: Update endpoint when backend API is available
   const response = await externalApi.get<Badge[]>("/badges");
   return response.data;
 }

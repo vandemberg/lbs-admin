@@ -3,6 +3,7 @@ import { Inter, Poppins } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { MaterialSymbolsLoader } from "@/components/material-symbols-loader";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -40,6 +41,7 @@ export default function RootLayout({
           fontFamily: "var(--font-display), Inter, Poppins, sans-serif",
         }}
       >
+        <MaterialSymbolsLoader />
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
