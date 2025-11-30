@@ -42,3 +42,7 @@ export async function updateUserPassword(user: User): Promise<void> {
 export async function deleteUser(userId: number): Promise<void> {
   await externalApi.delete(`/users/${userId}`);
 }
+
+export async function inviteUser(email: string): Promise<void> {
+  await externalApi.post("/users/invite", { email });
+}

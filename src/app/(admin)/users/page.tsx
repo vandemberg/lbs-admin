@@ -5,15 +5,12 @@ import { Button } from "@/components/ui/button";
 import { User } from "@/types/user";
 import { fetchUsers } from "@/services/external-api/user";
 import { useQuery } from "@tanstack/react-query";
-import { EditUserModal } from "./components/edit-user-modal";
-import { ChangePasswordUserModal } from "./components/change-password-user-modal";
-import { RemoverUserConfirmDialog } from "./components/remove-user-confirm-dialog";
 import { AddUserModal } from "./components/add-user-modal";
 import * as lbsUser from "@/services/external-api/user";
 import { toast } from "sonner";
 import { queryClient } from "@/lib/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Mail, Eye, Trash2, UserPlus, Search } from "lucide-react";
+import { Trash2, UserPlus, Search } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,9 +31,6 @@ import {
 import { Input } from "@/components/ui/input";
 
 export default function UsersPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [isNewUserOpen, setIsNewUserOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
@@ -54,11 +48,6 @@ export default function UsersPage() {
       user.email.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
-
-  const handleEditClick = (user: User) => {
-    setCurrentUser(user);
-    setIsDialogOpen(true);
-  };
 
   const handleRemoveClick = (user: User) => {
     setUserToDelete(user);
@@ -86,11 +75,6 @@ export default function UsersPage() {
       });
   };
 
-  const handlePasswordClick = (user: User) => {
-    setCurrentUser(user);
-    setIsPasswordDialogOpen(true);
-  };
-
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -105,7 +89,9 @@ export default function UsersPage() {
       {/* Page Header */}
       <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gestão de Alunos</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Gestão de Alunos
+          </h1>
           <p className="mt-1 text-muted-foreground">
             Acompanhe o progresso e comunique-se com seus alunos.
           </p>
@@ -131,18 +117,6 @@ export default function UsersPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-4">
-            <Select value={courseFilter} onValueChange={setCourseFilter}>
-              <SelectTrigger className="w-full sm:w-auto">
-                <SelectValue placeholder="Filtrar por curso" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os Cursos</SelectItem>
-                <SelectItem value="marketing">Marketing Digital</SelectItem>
-                <SelectItem value="leadership">Liderança Avançada</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
 
         {/* Table */}
@@ -163,12 +137,6 @@ export default function UsersPage() {
                       className="px-3 py-3.5 text-left text-sm font-semibold"
                     >
                       Progresso Geral
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold"
-                    >
-                      Cursos Inscritos
                     </th>
                     <th
                       scope="col"
@@ -220,35 +188,8 @@ export default function UsersPage() {
                               <span>{progress}%</span>
                             </div>
                           </td>
-                          <td className="whitespace-nowrap px-3 py-5 text-sm text-muted-foreground">
-                            <div className="flex -space-x-2 overflow-hidden">
-                              <span className="inline-block rounded-full bg-blue-200 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                Marketing
-                              </span>
-                              <span className="inline-block rounded-full bg-purple-200 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                                Liderança
-                              </span>
-                            </div>
-                          </td>
                           <td className="relative whitespace-nowrap py-5 pl-3 pr-6 text-right text-sm font-medium">
                             <div className="flex items-center justify-end gap-2">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                title="Enviar email"
-                              >
-                                <Mail className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                title="Visualizar"
-                                onClick={() => handleEditClick(user)}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -305,18 +246,6 @@ export default function UsersPage() {
       </AlertDialog>
 
       {/* Dialogs */}
-      <EditUserModal
-        currentUser={currentUser}
-        setIsDialogOpen={setIsDialogOpen}
-        isDialogOpen={isDialogOpen}
-      />
-
-      <ChangePasswordUserModal
-        currentUser={currentUser}
-        setIsPasswordDialogOpen={setIsPasswordDialogOpen}
-        isPasswordDialogOpen={isPasswordDialogOpen}
-      />
-
       <AddUserModal
         isDialogOpen={isNewUserOpen}
         setIsDialogOpen={setIsNewUserOpen}
