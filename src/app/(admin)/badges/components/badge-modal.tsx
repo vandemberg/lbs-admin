@@ -57,7 +57,7 @@ const badgeFormSchema = z.object({
   color: z.string(),
   threshold: z.number().min(1, "O threshold deve ser no mínimo 1"),
   description: z.string().optional(),
-  is_active: z.boolean().default(true),
+  is_active: z.boolean(),
 });
 
 type BadgeFormValues = z.infer<typeof badgeFormSchema>;
