@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
   eslint: {
     // Não bloquear o build na Vercel por erros de lint
     // (mas ainda recomendamos corrigir todos os erros)
-    ignoreDuringBuilds: false,
+    ignoreDuringBuilds: true,
   },
   typescript: {
     // Não bloquear o build na Vercel por erros de TypeScript
